@@ -31,8 +31,35 @@ let me know when you have completed the above challenges accordingly we will set
 - Tasks should be assigned to only who is Logged in
 - if there is no task , then we dont need to do anything
 - if there is task in pipeline , then we need to assign to someone who is free 
-- if no person is free task will stay in pipline
+- if no person is free then the task will stay in pipline
 
 ## INITIAL REQUIREMENTS
 
-- Lets Create Task and Person Models
+#### Install FASTApi
+```
+pip3 install fastapi[all]
+```
+#### Also install uvicorn to work as the server:
+```
+pip3 install uvicorn[standard]
+```
+
+#### Also install requirements.txt for this project:
+
+```
+pip3 install -r requirements.txt
+```
+
+## HOW TO RUN THIS PROJECT ?
+
+```
+uvicorn QC-Project-fastapi.task-assigner.main:app --host 0.0.0.0 --port 10000
+```
+
+OR
+
+```
+uvicorn .task-assigner.main:app --host 0.0.0.0 --port 10000
+```
+
+

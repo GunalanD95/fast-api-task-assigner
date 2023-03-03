@@ -38,9 +38,12 @@ async def get_all_users(db : Session = Depends(get_db)):
 @app.put('/login/{id}', response_model=schemas.LoginUser)
 async def login_user(id: int, request: schemas.LoginUser,db : Session = Depends(get_db)):
     user = db.query(models.Users).filter(models.Users.id == id).first()
+    print("user--->",user)
+    if not user:
+        return {f'There is no user with id {id}'}
     user.is_Logged_in = request.is_Logged_in
     db.commit()
-    return user
+    return f"{user.user_name} has successfully logged in"
 
 
 # create tasks
@@ -87,7 +90,7 @@ async def assign_free_tasks(db : Session = Depends(get_db)):
     if not free_tasks and not free_users:
         return {"There is no Free-Tasks and Free_users"}
     elif free_tasks and not free_users:
-        return {"There is no Free_users "}
+        return {"There are no Free_users "}
     elif free_users and not free_tasks:
         return {"there is no Free-Tasks"}
     
@@ -135,6 +138,11 @@ async def close_all_tasks(db : Session = Depends(get_db)):
         print(f"{task.task_name} has been completed by {user.user_name}")
 
     return {"Closed all Inprogress tasks"}
+
+
+
+
+
 
 
 
