@@ -66,7 +66,7 @@ uvicorn .task-assigner.main:app --host 0.0.0.0 --port 10000
 ## USED RESOURCES
 ```
 FASTAPI - https://github.com/GunalanD95/fast-api-learn
-         - https://fastapi.tiangolo.com/ 
+        - https://fastapi.tiangolo.com/ 
 
 ```
 

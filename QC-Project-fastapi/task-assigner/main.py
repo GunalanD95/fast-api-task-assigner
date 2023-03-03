@@ -152,10 +152,10 @@ async def close_all_tasks(db : Session = Depends(get_db)):
 
 def close_all_tasks():
     print("Calling Cron Job to assign free tasks and close all in-progress task")
-    assign_tasks = requests.post('http://localhost:8000/assign_all_tasks')
+    assign_tasks = requests.post('http://127.0.0.1:8000/assign_all_tasks')
     # if there are some tasks - then we can close them
     if assign_tasks:
-        close_tasks = requests.put('http://localhost:8000/close_all_tasks')
+        close_tasks = requests.put('http://127.0.0.1:8000/close_all_tasks')
 
 
 
