@@ -4,9 +4,12 @@ from . import schemas , db , models
 from .db import engine
 from sqlalchemy.orm import Session
 from collections import  deque 
+import requests
+from apscheduler.schedulers.background import BackgroundScheduler
+
+
 
 app = FastAPI()
-
 
 
 get_db = db.get_db
@@ -88,11 +91,14 @@ async def assign_free_tasks(db : Session = Depends(get_db)):
     free_users = get_free_users(db)
 
     if not free_tasks and not free_users:
-        return {"There is no Free-Tasks and Free_users"}
+        print("There is no Free-Tasks and Free_users ")
+        return False
     elif free_tasks and not free_users:
-        return {"There are no Free_users "}
+        print("There are no Free_users ")
+        return False
     elif free_users and not free_tasks:
-        return {"there is no Free-Tasks"}
+        print("there is no Free-Tasks")
+        return False
     
     while free_tasks:
         task_to_assign = free_tasks.popleft()
@@ -111,7 +117,8 @@ async def assign_free_tasks(db : Session = Depends(get_db)):
         db.commit()
         print(f"Assigned {task_to_assign.task_name} to {assignee.user_name}")
 
-    return {"Assigned all Free tasks"}
+    print("Assigned all Free tasks")
+    return True
 
 
 # close tasks if assigned to user
@@ -120,8 +127,8 @@ async def close_all_tasks(db : Session = Depends(get_db)):
     in_progress_tasks = get_in_progresss_tasks(db)
 
     if not in_progress_tasks:
-        return {"There are no in-progress tasks currently in pipeline"}
-
+        print("There are no in-progress tasks currently in pipeline")
+        return False
     while in_progress_tasks:
         task = in_progress_tasks.popleft()
 
@@ -137,10 +144,30 @@ async def close_all_tasks(db : Session = Depends(get_db)):
         db.commit()
         print(f"{task.task_name} has been completed by {user.user_name}")
 
-    return {"Closed all Inprogress tasks"}
+    print("Closed all Inprogress tasks")
+    return True 
 
 
 
+
+def close_all_tasks():
+    print("Calling Cron Job to assign free tasks and close all in-progress task")
+    assign_tasks = requests.post('http://localhost:8000/assign_all_tasks')
+    # if there are some tasks - then we can close them
+    if assign_tasks:
+        close_tasks = requests.put('http://localhost:8000/close_all_tasks')
+
+
+
+# CRON-JOB
+@app.on_event("startup")
+async def startup():
+    # Start the scheduled task scheduler on startup
+    scheduler = BackgroundScheduler()
+    # cron job to run the function every minute
+    scheduler.add_job(close_all_tasks, 'cron', minute='*')
+    scheduler.start()
+    
 
 
 
